@@ -21,7 +21,9 @@ jobs:
     
     - name: Build standalone WASM
       run: |
+        echo '==> start source emsdk_env'
         source ./emscripten/emsdk/emsdk_env.sh
-        STANDALONE=1 ./build-emscripten.sh .
+        echo '==> start build'
+        STANDALONE=1 bash -x ./build-emscripten.sh .
         ls -lh
     
