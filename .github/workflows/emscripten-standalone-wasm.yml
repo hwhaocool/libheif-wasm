@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - 'v*'
-    branches: [ 'b*' ]
+    # branches: [ 'b*' ]
   workflow_dispatch:
  
 jobs:
@@ -33,18 +33,20 @@ jobs:
         echo '==> start build'
         STANDALONE=1 bash -x ./build-emscripten.sh .
         ls -lh
-        cp libheif.wasm libheif-${{ env.VERSION }}-standalone.wasm
+        mkdir -p build
+        cp libheif.wasm build/libheif-${{ env.VERSION }}-standalone.wasm
+        STANDALONE=0 bash -x ./build-emscripten.sh .
+        ls -lh
+        cp libheif.wasm build/libheif-${{ env.VERSION }}-js.wasm
 
-    - name: Package artifacts
-      run: |
-        # 创建包名
-        PACKAGE_NAME="libheif-${{ env.VERSION }}-standalone-wasm.zip"
-        
-        # 添加文件到zip
-        zip "$PACKAGE_NAME" libheif-${{ env.VERSION }}-standalone.wasm
-    
-    - name: upload-artifact
+    - name: upload-artifact-standalone
       uses: actions/upload-artifact@v4
       with:
-        name: wasm-zip
-        path: libheif-${{ env.VERSION }}-standalone-wasm.zip
+        name: libheif-${{ env.VERSION }}-standalone-wasm
+        path: build/libheif-${{ env.VERSION }}-standalone.wasm
+
+    - name: upload-artifact-js
+      uses: actions/upload-artifact@v4
+      with:
+        name: libheif-${{ env.VERSION }}-js-wasm
+        path: build/libheif-${{ env.VERSION }}-js.wasm
