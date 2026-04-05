@@ -1,0 +1,27 @@
+name: Build Standalone WASM and Release
+ 
+on:
+  push:
+    tags:
+      - 'v*'
+    branches: [ 'b*' ]
+  workflow_dispatch:
+ 
+jobs:
+  build-wasm:
+    runs-on: ubuntu-22.04
+    env:
+      EMSCRIPTEN_VERSION: 3.1.61
+      
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Emscripten
+      run: ./scripts/install-ci-linux.sh
+    
+    - name: Build standalone WASM
+      run: |
+        source ./emscripten/emsdk/emsdk_env.sh
+        STANDALONE=1 ./build-emscripten.sh .
+        ls -lh
+    
