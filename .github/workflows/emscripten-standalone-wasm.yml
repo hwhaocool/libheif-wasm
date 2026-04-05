@@ -15,6 +15,13 @@ jobs:
       
     steps:
     - uses: actions/checkout@v4
+
+    - name: Prepare build variables
+      id: prep
+      run: |
+        # 提取版本号
+        VERSION=${GITHUB_REF_NAME}
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
     
     - name: Install Emscripten
       run: ./scripts/install-ci-linux.sh
@@ -26,4 +33,18 @@ jobs:
         echo '==> start build'
         STANDALONE=1 bash -x ./build-emscripten.sh .
         ls -lh
+        cp libheif.wasm libheif-${{ env.VERSION }}-standalone.wasm
+
+    - name: Package artifacts
+      run: |
+        # 创建包名
+        PACKAGE_NAME="libheif-${{ env.VERSION }}-standalone-wasm.zip"
+        
+        # 添加文件到zip
+        zip "$PACKAGE_NAME" libheif-${{ env.VERSION }}-standalone.wasm
     
+    - name: upload-artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: wasm-zip
+        path: libheif-${{ env.VERSION }}-standalone-wasm.zip
