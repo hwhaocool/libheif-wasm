@@ -35,9 +35,9 @@ jobs:
         ls -lh
         mkdir -p build
         cp libheif.wasm build/libheif-${{ env.VERSION }}-standalone.wasm
-        STANDALONE=0 bash -x ./build-emscripten.sh .
-        ls -lh
-        cp libheif.wasm build/libheif-${{ env.VERSION }}-js.wasm
+        # STANDALONE=0 bash -x ./build-emscripten.sh .
+        # ls -lh
+        # cp libheif.wasm build/libheif-${{ env.VERSION }}-js.wasm
 
     - name: upload-artifact-standalone
       uses: actions/upload-artifact@v4
@@ -45,8 +45,18 @@ jobs:
         name: libheif-${{ env.VERSION }}-standalone-wasm
         path: build/libheif-${{ env.VERSION }}-standalone.wasm
 
+    - name: Build Js WASM
+      run: |
+        STANDALONE=0 USE_TYPESCRIPT=0 bash -x ./build-emscripten.sh .
+        ls -lh
+        mkdir -p build
+        cp libheif.wasm build/libheif-${{ env.VERSION }}-js.wasm
+        cp libheif.js build/libheif-${{ env.VERSION }}.js
+
     - name: upload-artifact-js
       uses: actions/upload-artifact@v4
       with:
         name: libheif-${{ env.VERSION }}-js-wasm
-        path: build/libheif-${{ env.VERSION }}-js.wasm
+        path: |
+          build/libheif-${{ env.VERSION }}-js.wasm
+          build/libheif-${{ env.VERSION }}.js
