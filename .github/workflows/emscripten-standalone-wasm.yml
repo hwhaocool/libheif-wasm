@@ -51,6 +51,22 @@ jobs:
         name: libheif-${{ env.VERSION }}-standalone-wasm
         path: build/libheif-${{ env.VERSION }}-standalone.wasm
 
+    - name: Build standalone-debug WASM
+      run: |
+        echo '==> start source emsdk_env'
+        source ./emscripten/emsdk/emsdk_env.sh
+        echo '==> start build'
+        STANDALONE=1 DEBUG=1 bash -x ./build-emscripten.sh .
+        ls -lh
+        mkdir -p build
+        cp libheif.wasm build/libheif-${{ env.VERSION }}-standalone-debug.wasm
+
+    - name: upload-artifact-standalone-debug
+      uses: actions/upload-artifact@v4
+      with:
+        name: libheif-${{ env.VERSION }}-standalone-debug-wasm
+        path: build/libheif-${{ env.VERSION }}-standalone-debug.wasm
+
     - name: Build Js WASM
       run: |
         source ./emscripten/emsdk/emsdk_env.sh
